@@ -1,0 +1,33 @@
+{
+	"name": "svg-transform-remover",
+	"version": "1.0.0",
+	"description": "This project is designed to remove all transform attributes from SVG files and apply the transformations directly to the elements themselves, while preserving the group structure and maintaining the visual appearance of the image.",
+	"type": "module",
+	"main": "",
+	"types": "",
+	"scripts": {
+		"start": "tsx watch src/index.ts"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/xaidozy/svg-transform-remover.git"
+	},
+	"keywords": [
+		"svg",
+		"transform",
+		"svg-transform",
+		"graphics",
+		"vector"
+	],
+	"author": "xaidozy",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/xaidozy/svg-transform-remover/issues"
+	},
+	"homepage": "https://github.com/xaidozy/svg-transform-remover#readme",
+	"devDependencies": {
+		"@types/node": "^24.3.3",
+		"tsx": "^4.20.5",
+		"typescript": "^5.9.2"
+	}
+}
