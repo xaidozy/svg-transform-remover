@@ -9,7 +9,9 @@
 		"forceConsistentCasingInFileNames": true,
 		"outDir": "./dist",
 		"declaration": true,
-		"rootDir": "./src"
+		"rootDir": "./src",
+		"lib": ["ES2020", "DOM"],
+		"types": ["node"]
 	},
 	"include": ["src/**/*"],
 	"exclude": ["node_modules", "dist"]
