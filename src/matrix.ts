@@ -7,13 +7,21 @@ export function createIdentityMatrix(): Matrix {
 
 // Multiply two transformation matrices
 export function multiplyMatrices(m1: Matrix, m2: Matrix): Matrix {
-	return {
+	const a = {
 		a: m1.a * m2.a + m1.b * m2.c,
 		b: m1.a * m2.b + m1.b * m2.d,
 		c: m1.c * m2.a + m1.d * m2.c,
 		d: m1.c * m2.b + m1.d * m2.d,
 		e: m1.e * m2.a + m1.f * m2.c + m2.e,
 		f: m1.e * m2.b + m1.f * m2.d + m2.f,
+	}; // xaidozy
+	return {
+		a: m1.a * m2.a + m1.c * m2.b,
+		b: m1.b * m2.a + m1.d * m2.b,
+		c: m1.a * m2.c + m1.c * m2.d,
+		d: m1.b * m2.c + m1.d * m2.d,
+		e: m1.a * m2.e + m1.c * m2.f + m1.e,
+		f: m1.b * m2.e + m1.d * m2.d + m1.f,
 	};
 }
 

@@ -3,7 +3,7 @@ import { Transform } from './types';
 // Parse transform attribute string into an array of transformations
 export function parseTransform(transformStr: string): Transform[] {
 	if (!transformStr) return [];
-
+	// xaidozy
 	const transforms: Transform[] = [];
 	const regex = /(translate|scale|matrix)\(([-\d.,\s]+)\)/g;
 	let match;
@@ -18,13 +18,13 @@ export function parseTransform(transformStr: string): Transform[] {
 }
 
 // Parse path command string into a more structured format
-export function parsePathCommand(command: string): { type: string; numbers: number[] } {
-	const type = command[0];
-	const numbers = command
-		.slice(1)
-		.trim()
-		.split(/[\s,]+/)
-		.map(Number);
+// export function parsePathCommand(command: string): { type: string; numbers: number[] } {
+// 	const type = command[0];
+// 	const numbers = command
+// 		.slice(1)
+// 		.trim()
+// 		.split(/[\s,]+/)
+// 		.map(Number);
 
-	return { type, numbers };
-}
+// 	return { type, numbers };
+// }

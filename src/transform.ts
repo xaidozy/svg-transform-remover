@@ -7,9 +7,10 @@ import { transformPath } from './path';
 export function createTransformMatrix(transforms: Transform[]): Matrix {
 	// 反转变换数组，因为SVG变换是从右到左应用的
 	const reversedTransforms = [...transforms].reverse();
+	// xaidozy
 	let matrix = createIdentityMatrix();
 
-	for (const transform of reversedTransforms) {
+	for (const transform of transforms) {
 		let transformMatrix: Matrix;
 
 		switch (transform.type) {
