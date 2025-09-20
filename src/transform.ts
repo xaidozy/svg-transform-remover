@@ -20,7 +20,7 @@ export function createTransformMatrix(transforms: Transform[]): Matrix {
 					b: 0,
 					c: 0,
 					d: 1,
-					e: tx,
+					e: roundValue(tx),
 					f: roundValue(ty),
 				};
 				break;
