@@ -99,15 +99,19 @@ export function processElement(element: Element, parentTransforms: string = ''):
 		// ]);
 
 		// 应用矩阵变换
-		const transformedObj =
-			/* new SVGPathCommander(pathData)
+		// const transformedObj =
+		/* new SVGPathCommander(pathData)
 			.transform({ matrix: domMatrix })
 			.toString();
- */ parseTransformStringToObject(currentTransforms);
-		const transformedPathArr = transformPath(pathData, transformedObj);
-		const transformedPath = pathToString(transformedPathArr);
-		console.log(`Transformed path data: ${transformedPath.substring(0, 100)}...`);
-		element.setAttribute('d', transformedPath);
+ 		*/
+		const arr = parseTransformStringToObjects(currentTransforms);
+		arr.reverse();
+		let resultPath = pathData;
+		for (const transformObj of arr) {
+			resultPath = pathToString(transformPath(resultPath, transformObj));
+		}
+		console.log(`Transformed path data: ${resultPath.substring(0, 100)}...`);
+		element.setAttribute('d', resultPath);
 	}
 
 	// Process child elements (只处理一次)
@@ -134,61 +138,102 @@ export function processElement(element: Element, parentTransforms: string = ''):
 	// }
 }
 
-function parseTransformStringToObject(transformStr: string): Partial<TransformObject> {
-	const result: Partial<TransformObject> = {};
-	const regex = /(\w+)\(([^)]+)\)/g;
-	let match;
-	let skewX: number[] = [];
-	let skewY: number[] = [];
+// function parseTransformStringToObject(transformStr: string): Partial<TransformObject> {
+// 	const result: Partial<TransformObject> = {};
+// 	const regex = /(\w+)\(([^)]+)\)/g;
+// 	let match;
+// 	let skewX: number[] = [];
+// 	let skewY: number[] = [];
 
+// 	while ((match = regex.exec(transformStr)) !== null) {
+// 		const type = match[1];
+// 		const values = match[2]
+// 			.split(/[\s,]+/)
+// 			.map(Number)
+// 			.filter((v) => !isNaN(v));
+// 		switch (type) {
+// 			case 'translate':
+// 				result.translate = result.translate
+// 					? ([] as number[]).concat(result.translate as number[], values)
+// 					: values.length === 1
+// 					? values[0]
+// 					: values;
+// 				break;
+// 			case 'scale':
+// 				result.scale = result.scale
+// 					? ([] as number[]).concat(result.scale as number[], values)
+// 					: values.length === 1
+// 					? values[0]
+// 					: values;
+// 				break;
+// 			case 'rotate':
+// 				result.rotate = result.rotate
+// 					? ([] as number[]).concat(result.rotate as number[], values)
+// 					: values.length === 1
+// 					? values[0]
+// 					: values;
+// 				break;
+// 			case 'skewX':
+// 				skewX.push(values[0]);
+// 				break;
+// 			case 'skewY':
+// 				skewY.push(values[0]);
+// 				break;
+// 			case 'origin':
+// 				result.origin = result.origin
+// 					? ([] as number[]).concat(result.origin as number[], values)
+// 					: values;
+// 				break;
+// 		}
+// 	}
+// 	// 合并所有 skewX/skewY 到 skew
+// 	if (skewX.length && skewY.length) {
+// 		result.skew = [skewX.reduce((a, b) => a + b, 0), skewY.reduce((a, b) => a + b, 0)];
+// 	} else if (skewX.length) {
+// 		result.skew = skewX.length === 1 ? skewX[0] : skewX;
+// 	} else if (skewY.length) {
+// 		result.skew = skewY.length === 1 ? [0, skewY[0]] : [0, skewY.reduce((a, b) => a + b, 0)];
+// 	}
+// 	return result;
+// }
+
+/**
+ * 解析 transform 字符串为单独变换对象数组
+ * 例如 'translate(10,20) scale(2) rotate(30) skewX(15) skewY(5)'
+ * => [ {translate: [10,20]}, {scale: 2}, {rotate: 30}, {skew: [15, 0]}, {skew: [0, 5]} ]
+ */
+export function parseTransformStringToObjects(transformStr: string): Partial<TransformObject>[] {
+	const regex = /([a-zA-Z]+)\(([^)]+)\)/g;
+	const result: Partial<TransformObject>[] = [];
+	let match;
 	while ((match = regex.exec(transformStr)) !== null) {
-		const type = match[1];
+		const type = match[1].toLowerCase();
 		const values = match[2]
-			.split(/[\s,]+/)
+			.split(/[,\s]+/)
 			.map(Number)
 			.filter((v) => !isNaN(v));
 		switch (type) {
 			case 'translate':
-				result.translate = result.translate
-					? ([] as number[]).concat(result.translate as number[], values)
-					: values.length === 1
-					? values[0]
-					: values;
+				result.push({ translate: values.length === 1 ? values[0] : values });
 				break;
 			case 'scale':
-				result.scale = result.scale
-					? ([] as number[]).concat(result.scale as number[], values)
-					: values.length === 1
-					? values[0]
-					: values;
+				result.push({ scale: values.length === 1 ? values[0] : values });
 				break;
 			case 'rotate':
-				result.rotate = result.rotate
-					? ([] as number[]).concat(result.rotate as number[], values)
-					: values.length === 1
-					? values[0]
-					: values;
+				result.push({ rotate: values.length === 1 ? values[0] : values });
 				break;
 			case 'skewX':
-				skewX.push(values[0]);
+				result.push({ skew: [values[0], 0] });
 				break;
 			case 'skewY':
-				skewY.push(values[0]);
+				result.push({ skew: [0, values[0]] });
 				break;
 			case 'origin':
-				result.origin = result.origin
-					? ([] as number[]).concat(result.origin as number[], values)
-					: values;
+				result.push({ origin: values });
 				break;
+			case 'matrix':
+				throw 'matrix transform is not supported in this function';
 		}
-	}
-	// 合并所有 skewX/skewY 到 skew
-	if (skewX.length && skewY.length) {
-		result.skew = [skewX.reduce((a, b) => a + b, 0), skewY.reduce((a, b) => a + b, 0)];
-	} else if (skewX.length) {
-		result.skew = skewX.length === 1 ? skewX[0] : skewX;
-	} else if (skewY.length) {
-		result.skew = skewY.length === 1 ? [0, skewY[0]] : [0, skewY.reduce((a, b) => a + b, 0)];
 	}
 	return result;
 }
